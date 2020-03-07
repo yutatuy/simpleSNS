@@ -1,14 +1,23 @@
 <?php
 
 namespace App\Http\Controllers;
-// use Illuminate\Support\Facades\DB;
+
 use App\Http\Requests\CreatePost;
 use App\Post;
+use App\Reply;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
+    /**
+     * プロフィールの保存
+     *
+     * @param CreatePost $request
+     * @return Response
+     */
+
     public function index()
     {
         $posts = Post::all();
@@ -25,18 +34,31 @@ class PostController extends Controller
     {
         $post = new Post();
         $post->title = $request->title;
-        $origin = $request->file('image_url')->getClientOriginalName();
-        $url = $request->image_url->storeAs('public/images', $origin);
-        $post->image_url = str_replace('public/', 'storage/', $url);
+        if ($request->file('image_url')) {
+            $url = $request->image_url->store('public/images');
+            $post->image_url = str_replace('public/', './../storage/', $url);
+            // $imagefile = $request->file('image_url');
+            // $temp_path = $imagefile->store('public/images');
+            // $filename = str_replace('public/images/', '', $temp_path);
+            // //ファイル名は$temp_pathから"public/images/"を除いたもの
+            // $storage_path = 'public/productimage/' . $filename;
+            // //画像を保存するパスは"public/productimage/xxx.jpeg"
+            // Storage::move($temp_path, $storage_path);
+            // //Storageファサードのmoveメソッドで、第一引数->第二引数へファイルを移動
+            // $read_path = str_replace('public/', 'storage/', $storage_path);
+            // //商品一覧画面から画像を読み込むときのパスはstorage/productimage/xxx.jpeg"
+            // $post->image_url = $read_path;
+        }
         Auth::user()->posts()->save($post);
         return redirect()->route('posts.index');
     }
     public function detail(Post $post)
     {
         // $post = Post::find($id);
-
+        $replies = Reply::where('parent_id', $post->id)->get();
         return view('posts.detail', [
             'post' => $post,
+            'replies' => $replies,
         ]);
     }
     public function showEditForm(Post $post)
@@ -45,16 +67,34 @@ class PostController extends Controller
             'post' => $post,
         ]);
     }
-    public function edit(Request $request, Post $post)
+    public function edit(CreatePost $request, Post $post)
     {
         $post->title = $request->title;
+        if ($request->file('image_url')) {
+            $url = $request->image_url->store('public/images');
+            $post->image_url = str_replace('public/', './../storage/', $url);
+        }
         $post->save();
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.detail', ['post' => $post]);
     }
     public function delete(Post $post)
     {
         $post->delete();
 
         return redirect()->route('posts.index');
+    }
+
+    // リプライ追加
+    public function replyCreate(Request $request, Post $post)
+    {
+        //新たな返信をreply-tableに追加
+        $reply = new Reply();
+        $reply->parent_id = $post->id;
+        $reply->user_id = Auth::user()->id;
+        $reply->content = $request->content;
+        Auth::user()->replies()->save($reply);
+
+        // $post = Post::find($post->id);
+        return redirect()->route('posts.detail', ['post' => $post]);
     }
 }

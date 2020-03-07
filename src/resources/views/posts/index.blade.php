@@ -8,23 +8,23 @@
             @foreach ($posts as $post)
                 <li>
                     <dl>
-                        <dt><a href="{{route('user.index', ['user_id' => $post->user_id])}}">投稿者ページへ</a></dt>
+                        <dt><a href="{{route('user.index', ['user' => $post->user_id])}}">投稿者ページへ</a></dt>
                         <dt>{{ $post->title }}</dt>
-                        @if (!($post->image_url === 'aaa'))
-                        <dd><img src="{{ $post->image_url }}"></dd>
+                        @if ($post->image_url)
+                            <dd><img src="{{ $post->image_url }}"></dd>
                         @endif
                         <dd>{{ $post->created_at }}</dd>
                         <dd>{{ $post->update_at }}</dd>
                         <a><a href="{{ route('posts.detail', ['post' => $post]) }}">詳細</a></a>
                         <div>
                             @if ( $methods->is_favorite($post->id))
-                                <form action="{{ route('favorites.unfavorite',['postId' => $post->id]) }}" method="POST">
+                                <form action="{{ route('favorites.unfavorite',['post' => $post->id]) }}" method="POST">
                                     @csrf
                                     @method("DELETE")
                                     <input type="submit">いいね解除
                                 </form>
                             @else
-                                <form action="{{ route('favorites.favorite',['postId' => $post->id]) }}" method="POST">
+                                <form action="{{ route('favorites.favorite',['post' => $post->id]) }}" method="POST">
                                     @csrf
                                     <input type="submit">いいね登録
                                 </form>

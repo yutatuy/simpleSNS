@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function index(int $user_id)
+    public function index(User $user)
     {
-        $posts = Post::all();
-        // $posts = Auth::user()->posts()->get();
+        $posts = Post::where('user_id', $user->id)->get();
+        $name = User::find($user->id)->name;
         return view('user.index', [
             'posts' => $posts,
-            'user_id' => $user_id,
+            'name' => $name,
         ]);
     }
 }
