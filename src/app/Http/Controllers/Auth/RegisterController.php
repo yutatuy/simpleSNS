@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -28,7 +29,16 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    // protected $redirectTo = '/home';
+
+    // ☆リダイレクト先をマイページにする
+    protected function redirectTo()
+    {
+        if (!Auth::user()) {
+            return '/';
+        }
+        return route('user.index', ['user_id' => Auth::id()]);
+    }
 
     /**
      * Create a new controller instance.
@@ -49,9 +59,13 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ], [], [
+            'name' => 'ユーザー名',
+            'email' => 'メールアドレス',
+            'password' => 'パスワード',
         ]);
     }
 

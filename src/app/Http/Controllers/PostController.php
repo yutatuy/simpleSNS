@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 // use Illuminate\Support\Facades\DB;
+use App\Http\Requests\CreatePost;
 use App\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -19,12 +21,14 @@ class PostController extends Controller
         return view('posts.create');
     }
 
-    public function create(Request $request)
+    public function create(CreatePost $request)
     {
         $post = new Post();
         $post->title = $request->title;
-        $post->save();
-
+        $origin = $request->file('image_url')->getClientOriginalName();
+        $url = $request->image_url->storeAs('public/images', $origin);
+        $post->image_url = str_replace('public/', 'storage/', $url);
+        Auth::user()->posts()->save($post);
         return redirect()->route('posts.index');
     }
     public function detail(Post $post)

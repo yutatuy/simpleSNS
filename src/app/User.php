@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use \App\Post;
 
 class User extends Authenticatable
 {
@@ -15,6 +16,18 @@ class User extends Authenticatable
      *
      * @var array
      */
+    public function posts()
+    {
+        return $this->hasMany('App\Post');
+    }
+
+    /* favoriteテーブル(中間テーブル)に値を挿入 */
+    public function favorites()
+    {
+        // return $this->belongsToMany('App\Post');
+        return $this->belongsToMany(Post::class, 'favorites', 'user_id', 'post_id')->withTimestamps();
+    }
+
     protected $fillable = [
         'name', 'email', 'password',
     ];
