@@ -37,17 +37,6 @@ class PostController extends Controller
         if ($request->file('image_url')) {
             $url = $request->image_url->store('public/images');
             $post->image_url = str_replace('public/', './../storage/', $url);
-            // $imagefile = $request->file('image_url');
-            // $temp_path = $imagefile->store('public/images');
-            // $filename = str_replace('public/images/', '', $temp_path);
-            // //ファイル名は$temp_pathから"public/images/"を除いたもの
-            // $storage_path = 'public/productimage/' . $filename;
-            // //画像を保存するパスは"public/productimage/xxx.jpeg"
-            // Storage::move($temp_path, $storage_path);
-            // //Storageファサードのmoveメソッドで、第一引数->第二引数へファイルを移動
-            // $read_path = str_replace('public/', 'storage/', $storage_path);
-            // //商品一覧画面から画像を読み込むときのパスはstorage/productimage/xxx.jpeg"
-            // $post->image_url = $read_path;
         }
         Auth::user()->posts()->save($post);
         return redirect()->route('posts.index');

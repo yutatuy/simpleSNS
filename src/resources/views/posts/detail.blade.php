@@ -14,7 +14,11 @@
        {{-- ログインユーザの投稿であれば編集と削除が可能 --}}
        @if ($post->user_id === Auth::user()->id )
             <p><span class="u-mt-30"><span><a href="{{ route('posts.edit', ['post' => $post])}}">編集</a></span></span></p>
-            <p><span><a href="{{ route('posts.delete', ['post' => $post])}}">削除</a></span></p>
+            <form action="{{ route('posts.delete', ['post' => $post])}}" method="POST">
+                @csrf
+                @method("DELETE")
+                <input type="submit">削除
+            </form>
        @endif
        {{-- 返信一覧 --}}
        <ul class="u-mt-30">
@@ -24,7 +28,7 @@
        </ul>
        {{-- 返信フォーム --}}
        <div class="u-mt-30">
-            <form action="{{ route('reply.create',['parent_id' => $post->id]) }}" method="POST">
+            <form action="{{ route('reply.create',['post' => $post->id]) }}" method="POST">
                 @csrf
                 <label for="content">返信する</label>
                 <input type="text" name="content">

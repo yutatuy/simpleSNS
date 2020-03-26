@@ -34,6 +34,9 @@ RUN apk update && \
   apk del .build-dependencies && \
   docker-php-ext-install intl pdo_mysql mbstring zip bcmath redis && \
   docker-php-ext-enable xdebug && \
+  apt-get install -y wget git unzip libpq-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev && \
+  docker-php-ext-configure gd --with-freetype --with-jpeg && \
+  docker-php-ext-install -j$(nproc) gd && \
   mkdir $PSYSH_DIR && curl $PHP_MANUAL_URL -o $PSYSH_PHP_MANUAL && \
   curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer && \
   composer config -g process-timeout 3600 && \

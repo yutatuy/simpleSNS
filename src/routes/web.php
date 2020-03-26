@@ -18,7 +18,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/posts/{post}', 'PostController@detail')->name('posts.detail');
     Route::get('/posts/{post}/edit', 'PostController@showEditForm')->name('posts.edit');
     Route::post('/posts/{post}/edit', 'PostController@edit');
-    Route::get('/posts/{post}/delete', 'PostController@delete')->name('posts.delete');
+    Route::delete('/posts/{post}/delete', 'PostController@delete')->name('posts.delete');
     Route::get('/{user}', 'UserController@index')->name('user.index');
     Route::delete('/posts/{post}/unfavorite', 'FavoriteController@destroy')->name('favorites.unfavorite');
     Route::post('/posts/{post}/favorite', 'FavoriteController@store')->name('favorites.favorite');
